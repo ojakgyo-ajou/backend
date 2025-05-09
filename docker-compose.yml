@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   backend:
-    image: jjjjjk12/ojakgyo_be:latest
+    image: jjjjjk12/ojakgyo-be:latest
     restart: unless-stopped
     depends_on:
       - mysql
