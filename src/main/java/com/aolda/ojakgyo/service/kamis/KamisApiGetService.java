@@ -1,4 +1,4 @@
-package com.aolda.ojakgyo.service;
+package com.aolda.ojakgyo.service.kamis;
 
 
 import jakarta.transaction.Transactional;
@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class KamisApiGetService {
-    
 
-    
+    public void collectMonthlyPriceDataForAllInformation() {
 
+    }
 }

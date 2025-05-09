@@ -30,7 +30,7 @@ public class DailyDto {
         this.latestDate = latestDate;
         this.dpr1 = dpr1;
         this.dpr2 = dpr2;
-
+        
         // 가격 변화율 계산
         this.priceChangeRate = ((double) (dpr1 - dpr2) / dpr2 * 100);
         this.priceDirection = (priceChangeRate > 0) ? 1 : (priceChangeRate < 0) ? 0 : 2; // 상승: 1, 하락: 0, 유지 : 2

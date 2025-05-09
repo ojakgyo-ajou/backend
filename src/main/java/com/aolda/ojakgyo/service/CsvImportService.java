@@ -88,7 +88,6 @@ public class CsvImportService {
                          continue;
                     }
 
-
                     Information information = Information.builder()
                             .itemCategoryCode(itemCategoryCode)
                             .itemCategoryName(itemCategoryName)
@@ -100,7 +99,7 @@ public class CsvImportService {
                             .size(size)
                             .build();
 
-                    log.info("저장 전 Information 객체: {}", information); // itemName 등의 한글 필드가 정상인지 확인
+                    log.info("저장 전 Information 이름 : {}", information.getKindName()); // itemName 등의 한글 필드가 정상인지 확인
 
                     informationRepository.save(information);
                     successfullySavedCount++;
