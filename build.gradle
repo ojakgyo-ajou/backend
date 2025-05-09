@@ -73,5 +73,5 @@ tasks.named('test') {
 }
 
 clean {
-	delete file('src/main/generated')
+    delete file('src/main/generated')
 }
