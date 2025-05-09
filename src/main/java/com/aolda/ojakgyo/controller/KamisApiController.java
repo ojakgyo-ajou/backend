@@ -31,7 +31,7 @@ public class KamisApiController {
 
     private final KamisApiService kamisApiService;
     private final InformationService informationService;
-
+    
     // [메인 대시보드용] 금일 할인율 높은 상품 가져오기 
     @GetMapping("/dashboard") // 경로 명확화
     public ResponseEntity<Object> getDailyDiscountedProductsByPeriod(@RequestParam(value = "period", defaultValue = "day") String period) {
@@ -42,7 +42,8 @@ public class KamisApiController {
                 List<DailyDto> dailyDtoList = kamisApiService.getDailyTopDiscountedProducts();
                 if (dailyDtoList == null || dailyDtoList.isEmpty()) {
                     return ResponseEntity.noContent().build(); // 204 No Content
-                }
+                } 
+
                 return ResponseEntity.ok(dailyDtoList);
 
             case "month":

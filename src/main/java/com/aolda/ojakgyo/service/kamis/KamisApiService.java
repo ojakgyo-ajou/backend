@@ -93,8 +93,16 @@ public class KamisApiService {
         LocalDate today = LocalDate.now();
         LocalDate yesterday = today.minusDays(1);
 
-        List<DailyPrice> pricesForToday = dailyPriceRepository.findByYearAndMonthAndDay(String.valueOf(today.getYear()), String.format("%02d", today.getMonthValue()), String.format("%02d", today.getDayOfMonth()));
-        List<DailyPrice> pricesForYesterday = dailyPriceRepository.findByYearAndMonthAndDay(String.valueOf(yesterday.getYear()), String.format("%02d", yesterday.getMonthValue()), String.format("%02d", yesterday.getDayOfMonth()));
+        List<DailyPrice> pricesForToday = dailyPriceRepository.findAll();
+                // dailyPriceRepository.findByYearAndMonthAndDay(String.valueOf(today.getYear()), String.format("%02d", today.getMonthValue()), String.format("%02d", today.getDayOfMonth()));
+
+        List<DailyPrice> pricesForYesterday = dailyPriceRepository.findAll();
+                // findByYearAndMonthAndDay(String.valueOf(yesterday.getYear()), String.format("%02d", yesterday.getMonthValue()), String.format("%02d", yesterday.getDayOfMonth()));
+
+        if (pricesForToday.isEmpty() || pricesForYesterday.isEmpty()) {
+            System.out.println("No data found.");
+            return new ArrayList<>(); // 오늘 또는 어제의 가격 데이터가 없으면 빈 리스트 반환
+        }
 
         Map<Information, DailyPrice> todayPriceMap = pricesForToday.stream()
                 .collect(Collectors.toMap(DailyPrice::getInformation, dp -> dp, (dp1, dp2) -> dp1));

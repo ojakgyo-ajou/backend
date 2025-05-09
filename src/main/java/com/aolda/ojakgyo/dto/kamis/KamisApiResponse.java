@@ -15,17 +15,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true) // JSON에 있지만 DTO에 없는 필드는 무시
 @ToString
 public class KamisApiResponse {
-    private Condition condition;
-    private Data data;
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    @ToString
-    public static class Condition {
-        private ConditionItem item;
-    }
+    private List<ConditionItem> condition;
+    private Object data;
 
     @Getter
     @Setter
@@ -62,7 +53,7 @@ public class KamisApiResponse {
     @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     @ToString
-    public static class Data {
+    public static class ItemData {
         @JsonProperty("error_code")
         private String errorCode;
         private List<PriceItem> item; // price 데이터 리스트
@@ -82,4 +73,4 @@ public class KamisApiResponse {
         private String regday; // "MM/dd" 형식
         private String price;  // "2,434" 형식 (쉼표 포함)
     }
-}
+} 

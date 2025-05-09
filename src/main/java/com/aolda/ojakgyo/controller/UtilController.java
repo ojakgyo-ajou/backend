@@ -36,4 +36,14 @@ public class UtilController {
             return ResponseEntity.status(500).body("월별 가격 데이터 수집 실패: " + e.getMessage());
         }
     }
+
+    @PostMapping("/daily-price")
+    public ResponseEntity<String> getKamisDailyData() { 
+        try {
+            kamisPriceCollectionService.collectDailyPriceDataForAllInformationToday();
+            return ResponseEntity.ok("오늘 날짜 일별 가격 데이터 수집 성공");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("오늘 날짜 일별 가격 데이터 수집 실패: " + e.getMessage());
+        }
+    }
 }
