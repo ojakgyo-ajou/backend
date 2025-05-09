@@ -22,13 +22,15 @@ public class YearlyPrice {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "information_id") // 실제 Products 테이블의 PK 컬럼명에 맞춰야 합니다.
-    private Products products;
+    private Information information;
 
     // 연도
-    @Column(name = "year")
-    private Integer year;
+    @Column(name = "price_year", nullable = false)
+    private Integer priceYear;
+
 
     // 연도별 평균 가격
-    @Column(name = "price")
-    private Integer price;
+    @Column(name = "average_price")
+    private Integer averagePrice; // 연평균 가격
+
 }

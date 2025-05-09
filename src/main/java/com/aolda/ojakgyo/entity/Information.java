@@ -28,18 +28,24 @@ public class Information {
     private int size;
 
     // p_itemcategorycode 부류코드
-    @Column(name = "p_itemcategorycode")
+    @Column(name = "itemcategorycode")
     private String itemCategoryCode;
 
     // p_itemcode 품목코드
-    @Column(name = "p_itemcode")
+    @Column(name = "itemcode")
     private String itemCode;
 
     // p_kindcode 품종코드
-    @Column(name = "p_kindcode")
+    @Column(name = "kindcode")
     private String kindCode;
 
     // p_productrankcode 등급코드
-    @Column(name = "p_productrankcode")
+    @Column(name = "productrankcode")
     private String productRankCode;
+
+    @Column(name = "itemname") // 품목명
+    private String itemName;
+
+    @Column(name = "kindname") // 품종명
+    private String kindName;
 }
