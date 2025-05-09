@@ -75,7 +75,7 @@ public class KamisApiService {
      * @return 해당 품목의 금일 가격 리스트
      */
     public List<DailyPrice> getDailyPrices(String itemCategoryCode, String itemCode, String kindCode) {
-        return dailyPriceRepository.findByInformationItemCategoryCodeAndInformationItemCodeAndInformationKindCodeOrderByPriceYearAscPriceMonthAscPriceDayAsc(
+        return dailyPriceRepository.findByInformationItemCategoryCodeAndInformationItemCodeAndInformationKindCode(
                 itemCategoryCode, itemCode, kindCode);
     }
     
