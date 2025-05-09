@@ -44,3 +44,8 @@ out/
 */**/application-prod.properties
 */**/application-prod.yml
 */**/application-prod.yaml
+
+wrapper/
+.gradle/
+caches
+/wrapper/
