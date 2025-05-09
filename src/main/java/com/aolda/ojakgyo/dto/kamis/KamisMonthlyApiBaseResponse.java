@@ -14,7 +14,9 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class KamisMonthlyApiBaseResponse {
     private List<KamisConditionDto> condition;
+
     @JsonProperty("error_code")
     private String errorCode;
-    private KamisPriceDataDto price;
-} 
+
+    private List<KamisPriceDataDto> price; // KamisPriceDataDto -> List<KamisPriceDataDto>로 변경
+}

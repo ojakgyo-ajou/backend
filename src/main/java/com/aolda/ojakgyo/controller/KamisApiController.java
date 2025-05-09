@@ -119,6 +119,9 @@ public class KamisApiController {
                 if (dailyPrices == null || dailyPrices.isEmpty()) {
                     return ResponseEntity.noContent().build();
                 }
+
+                System.out.println("No data found.");
+
                 List<DailyPriceDto> dailyPriceDtos = dailyPrices.stream().map(dp -> DailyPriceDto.builder()
                         .itemCategoryCode(dp.getInformation().getItemCategoryCode())
                         .itemCategoryName(dp.getInformation().getItemCategoryName())

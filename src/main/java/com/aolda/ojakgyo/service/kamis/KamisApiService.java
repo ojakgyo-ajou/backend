@@ -82,9 +82,9 @@ public class KamisApiService {
      */
     public List<DailyPrice> getDailyPrices(String itemCategoryCode, String itemCode, String kindCode, int year, int month) {
 
-        return dailyPriceRepository.findByConditionsOrderByDateAsc(itemCategoryCode, itemCode, kindCode, year, month);
+        return dailyPriceRepository.findByYearAndMonthAndDay(String.valueOf(year), String.format("%02d", month), String.format("%02d", LocalDate.now().getDayOfMonth()));
     }
-        
+
     /**
      * 전날에 비해 할인이 가장 많이 된 상품 20개까지 가져오기
      * @return 할인율 높은 상품 리스트

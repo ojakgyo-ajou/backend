@@ -1,18 +1,13 @@
 package com.aolda.ojakgyo.controller; // 실제 패키지 경로
 
-import com.aolda.ojakgyo.entity.Information;
-import com.aolda.ojakgyo.repository.InformationRepository;
 import com.aolda.ojakgyo.service.CsvImportService;
-import com.aolda.ojakgyo.service.KamisPriceCollectionService;
-import com.aolda.ojakgyo.service.kamis.KamisApiGetService;
+import com.aolda.ojakgyo.service.kamis.KamisPriceCollectionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-    
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
