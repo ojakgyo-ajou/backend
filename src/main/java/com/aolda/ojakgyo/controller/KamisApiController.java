@@ -15,7 +15,7 @@ import com.aolda.ojakgyo.dto.DailyPriceDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity; 
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -26,43 +26,27 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/api/kamis") // 컨트롤러 기본 경로 설정
-@RequiredArgsConstructor
+@RequiredArgsConstructor 
+
 public class KamisApiController {
 
     private final KamisApiService kamisApiService;
     private final InformationService informationService;
-    
-    // [메인 대시보드용] 금일 할인율 높은 상품 가져오기 
-    @GetMapping("/dashboard") // 경로 명확화
-    public ResponseEntity<Object> getDailyDiscountedProductsByPeriod(@RequestParam(value = "period", defaultValue = "day") String period) {
-        switch (period.toLowerCase()) {
-            
-            // 전날에 비해 할인이 가장 많이 된 상품 20개까지 가져오기
-            case "day":
-                List<DailyDto> dailyDtoList = kamisApiService.getDailyTopDiscountedProducts();
-                if (dailyDtoList == null || dailyDtoList.isEmpty()) {
-                    return ResponseEntity.noContent().build(); // 204 No Content
-                } 
 
-                return ResponseEntity.ok(dailyDtoList);
+    // [메인 대시보드용] 금일 할인율 높은 상품 가져오기
+    @GetMapping("/dashboard")
+    public ResponseEntity<List<DailyDto>> getDailyDiscountedProductsByPeriod() {
+        // Kamis Api를 활용해서 이전에 비해 할인율이 가장 높은 상품을 가져옵니다.
+        List<DailyDto> dailyDtoList = kamisApiService.getDailyTopDiscountedProducts();
 
-            case "month":
-                List<DailyDto> monthlyDtoList = kamisApiService.getMonthlyTopDiscountedProducts();
-                if (monthlyDtoList == null || monthlyDtoList.isEmpty()) {
-                    return ResponseEntity.noContent().build();
-                }
-                return ResponseEntity.ok(monthlyDtoList);
-
-            case "year":
-                List<DailyDto> yearlyDtoList = kamisApiService.getYearlyTopDiscountedProducts();
-                if (yearlyDtoList == null || yearlyDtoList.isEmpty()) {
-                    return ResponseEntity.noContent().build();
-                }
-                return ResponseEntity.ok(yearlyDtoList);
-
-            default:
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid period specified.");
+        if (dailyDtoList == null || dailyDtoList.isEmpty()) {
+            return ResponseEntity.noContent().build(); // 204 No Content
         }
+
+        // 상위 N개만 반환하고 싶다면 여기서 subList 사용 가능
+        // 예: return ResponseEntity.ok(dailyDtoList.subList(0, Math.min(dailyDtoList.size(), 20)));
+
+        return ResponseEntity.ok(dailyDtoList);
     }
 
     /**

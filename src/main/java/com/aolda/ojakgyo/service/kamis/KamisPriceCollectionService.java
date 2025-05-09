@@ -10,7 +10,6 @@ import com.aolda.ojakgyo.entity.MonthlyPrice;
 import com.aolda.ojakgyo.repository.DailyPriceRepository;
 import com.aolda.ojakgyo.repository.InformationRepository;
 import com.aolda.ojakgyo.repository.MonthlyPriceRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -81,9 +80,9 @@ public class KamisPriceCollectionService {
                     log.info("KAMIS API가 data 필드를 배열로 반환했습니다. 첫 번째 요소(에러/상태 코드 추정): {}", errorCode);
                     if ("200".equals(errorCode) || "ERR-001".equals(errorCode)) { // "200"은 보통 성공이나 여기서는 다른 의미일 수 있음, API 문서 확인 필요
                         // "데이터 없음" 등의 특정 코드에 대한 처리
-                         KamisApiResponse.ConditionItem firstCondition = apiResponse.getCondition().isEmpty() ? null : apiResponse.getCondition().get(0);
-                         log.info("KAMIS API 응답: 데이터가 없거나 특정 상태 코드 반환. 코드: {}, 조건: {}", errorCode, firstCondition);
-                         return;
+                        KamisApiResponse.ConditionItem firstCondition = apiResponse.getCondition().isEmpty() ? null : apiResponse.getCondition().get(0);
+                        log.info("KAMIS API 응답: 데이터가 없거나 특정 상태 코드 반환. 코드: {}, 조건: {}", errorCode, firstCondition);
+                        return;
                     }
                 }
             } else if (rawData instanceof java.util.Map) {
