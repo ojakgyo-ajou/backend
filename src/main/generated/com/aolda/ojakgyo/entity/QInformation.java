@@ -23,6 +23,8 @@ public class QInformation extends EntityPathBase<Information> {
 
     public final StringPath itemCategoryCode = createString("itemCategoryCode");
 
+    public final StringPath itemCategoryName = createString("itemCategoryName");
+
     public final StringPath itemCode = createString("itemCode");
 
     public final StringPath itemName = createString("itemName");
