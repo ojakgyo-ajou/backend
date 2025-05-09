@@ -1,8 +1,12 @@
 package com.aolda.ojakgyo.repository;
 
+import com.aolda.ojakgyo.entity.Information;
 import com.aolda.ojakgyo.entity.MonthlyPrice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import java.util.List;
+import java.util.Optional;
 
 public interface MonthlyPriceRepository extends JpaRepository<MonthlyPrice, Long> {
 
@@ -19,4 +23,26 @@ public interface MonthlyPriceRepository extends JpaRepository<MonthlyPrice, Long
     List<MonthlyPrice> findByInformationItemCategoryCodeAndInformationItemCodeAndInformationKindCodeOrderByPriceYearAscPriceMonthAsc(
             String itemCategoryCode, String itemCode, String kindCode
     );
+
+    Optional<MonthlyPrice> findByInformationAndPriceYearAndPriceMonth(Information information, Integer year, Integer month);
+
+    @Query("SELECT mp FROM MonthlyPrice mp " +
+           "WHERE mp.information.itemCategoryCode = :itemCategoryCode " +
+           "AND mp.information.itemCode = :itemCode " +
+           "AND mp.information.kindCode = :kindCode " +
+           "AND mp.priceYear = :startYear " +
+           "AND mp.priceMonth >= :startMonth " +
+           "AND mp.priceYear = :endYear " +
+           "AND mp.priceMonth <= :endMonth")
+    List<MonthlyPrice> findPricesInDateRange(
+            @Param("itemCategoryCode") String itemCategoryCode,
+            @Param("itemCode") String itemCode,
+            @Param("kindCode") String kindCode,
+            @Param("startYear") int startYear,
+            @Param("startMonth") int startMonth,
+            @Param("endYear") int endYear,
+            @Param("endMonth") int endMonth
+    );
+
+    List<MonthlyPrice> findByPriceYearAndPriceMonth(int year, int month);
 }

@@ -21,4 +21,6 @@ public interface YearlyPriceRepository extends JpaRepository<YearlyPrice, Long> 
     List<YearlyPrice> findByInformationItemCategoryCodeAndInformationItemCodeAndInformationKindCodeOrderByPriceYearAsc(
             String itemCategoryCode, String itemCode, String kindCode
     );
+
+    List<YearlyPrice> findByPriceYear(int year);
 }

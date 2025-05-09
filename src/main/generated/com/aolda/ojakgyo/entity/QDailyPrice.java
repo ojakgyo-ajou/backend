@@ -22,13 +22,17 @@ public class QDailyPrice extends EntityPathBase<DailyPrice> {
 
     public static final QDailyPrice dailyPrice = new QDailyPrice("dailyPrice");
 
-    public final DatePath<java.time.LocalDate> date = createDate("date", java.time.LocalDate.class);
+    public final StringPath day = createString("day");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final QInformation information;
 
+    public final StringPath month = createString("month");
+
     public final NumberPath<Integer> price = createNumber("price", Integer.class);
+
+    public final StringPath year = createString("year");
 
     public QDailyPrice(String variable) {
         this(DailyPrice.class, forVariable(variable), INITS);

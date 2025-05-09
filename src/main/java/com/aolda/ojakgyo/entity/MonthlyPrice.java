@@ -23,7 +23,7 @@ public class MonthlyPrice {
 
     @Column(name = "price_month")
     private Integer priceMonth;
-
+    
     @Column(name = "price")
     private Integer price;
 

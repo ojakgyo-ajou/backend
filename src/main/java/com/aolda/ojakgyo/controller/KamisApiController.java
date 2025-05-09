@@ -7,54 +7,46 @@ import com.aolda.ojakgyo.entity.Information;
 import com.aolda.ojakgyo.entity.MonthlyPrice; 
 import com.aolda.ojakgyo.entity.YearlyPrice;
 import com.aolda.ojakgyo.service.InformationService;
-import com.aolda.ojakgyo.service.KamisApiService;
+import com.aolda.ojakgyo.service.kamis.KamisApiService;
 import com.aolda.ojakgyo.dto.InformationDto;
+import com.aolda.ojakgyo.dto.YearlyPriceDto;
+import com.aolda.ojakgyo.dto.MonthlyPriceDto;
+import com.aolda.ojakgyo.dto.DailyPriceDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity; 
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/kamis") // 컨트롤러 기본 경로 설정
-@RequiredArgsConstructor
+@RequiredArgsConstructor 
+
 public class KamisApiController {
 
     private final KamisApiService kamisApiService;
     private final InformationService informationService;
 
-    // [메인 대시보드용] 금일 할인율 높은 상품 가져오기 
-    @GetMapping("/dashboard") // 경로 명확화
-    public ResponseEntity<Object> getDailyDiscountedProductsByPeriod(@RequestParam(value = "period", defaultValue = "day") String period) {
-        switch (period.toLowerCase()) {
-            
-            // 전날에 비해 할인이 가장 많이 된 상품 20개까지 가져오기
-            case "day":
-                List<DailyDto> dailyDtoList = kamisApiService.getDailyTopDiscountedProducts();
-                if (dailyDtoList == null || dailyDtoList.isEmpty()) {
-                    return ResponseEntity.noContent().build(); // 204 No Content
-                }
-                return ResponseEntity.ok(dailyDtoList);
+    // [메인 대시보드용] 금일 할인율 높은 상품 가져오기
+    @GetMapping("/dashboard")
+    public ResponseEntity<List<DailyDto>> getDailyDiscountedProductsByPeriod() {
+        // Kamis Api를 활용해서 이전에 비해 할인율이 가장 높은 상품을 가져옵니다.
+        List<DailyDto> dailyDtoList = kamisApiService.getDailyTopDiscountedProducts();
 
-            case "month":
-                List<DailyDto> monthlyDtoList = kamisApiService.getMonthlyTopDiscountedProducts();
-                if (monthlyDtoList == null || monthlyDtoList.isEmpty()) {
-                    return ResponseEntity.noContent().build();
-                }
-                return ResponseEntity.ok(monthlyDtoList);
-
-            case "year":
-                List<DailyDto> yearlyDtoList = kamisApiService.getYearlyTopDiscountedProducts();
-                if (yearlyDtoList == null || yearlyDtoList.isEmpty()) {
-                    return ResponseEntity.noContent().build();
-                }
-                return ResponseEntity.ok(yearlyDtoList);
-
-            default:
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid period specified.");
+        if (dailyDtoList == null || dailyDtoList.isEmpty()) {
+            return ResponseEntity.noContent().build(); // 204 No Content
         }
+
+        // 상위 N개만 반환하고 싶다면 여기서 subList 사용 가능
+        // 예: return ResponseEntity.ok(dailyDtoList.subList(0, Math.min(dailyDtoList.size(), 20)));
+
+        return ResponseEntity.ok(dailyDtoList);
     }
 
     /**
@@ -90,61 +82,99 @@ public class KamisApiController {
     }
     
     /**
-     * 특정 상품에 대한 월별 가격 리스트를 반환함.
-     *
+     * mode(day, month, year)에 따라 일별/월별/연별 가격 리스트를 반환하는 통합 API
+     * @param mode 조회 모드 (day, month, year)
      * @param itemCategoryCode 품목 카테고리 코드
-     * @param itemCode         품목 코드
-     * @param kindCode         품종 코드
-     * @return 해당 상품의 월별 가격 리스트
+     * @param itemCode 품목 코드
+     * @param kindCode 품종 코드
      */
-    @GetMapping("/price/monthly")
-    public ResponseEntity<List<MonthlyPrice>> getMonthlyPrice(
-            @RequestParam(required = true) String itemCategoryCode,
-            @RequestParam(required = true) String itemCode,
-            @RequestParam(required = true) String kindCode) {
-        List<MonthlyPrice> monthlyPrices = kamisApiService.getMonthlyPrices(itemCategoryCode, itemCode, kindCode);
-        if (monthlyPrices.isEmpty()) {
-            return ResponseEntity.noContent().build(); // 데이터가 없으면 204 No Content
-        }
-        return ResponseEntity.ok(monthlyPrices);
-    }
+    @GetMapping("/price")
+    public ResponseEntity<?> getPriceByMode(
+            @RequestParam(name = "mode", required = true) String mode,
+            @RequestParam(name = "itemCategoryCode", required = true) String itemCategoryCode,
+            @RequestParam(name = "itemCode", required = true) String itemCode,
+            @RequestParam(name = "kindCode", required = true) String kindCode) {
 
-    /**
-     * 특정 품목에 대한 금일 가격 리스트를 반환함.
-     * @param itemCategoryCode 품목 카테고리 코드
-     * @param itemCode         품목 코드
-     * @param kindCode         품종 코드
-     * @return 해당 품목의 금일 가격 리스트
-     */
-    @GetMapping("/price/daily")
-    public ResponseEntity<List<DailyPrice>> getDailyPrice(
-            @RequestParam(required = true) String itemCategoryCode,
-            @RequestParam(required = true) String itemCode,
-            @RequestParam(required = true) String kindCode) {
-        List<DailyPrice> dailyPrices = kamisApiService.getDailyPrices(itemCategoryCode, itemCode, kindCode);
-        if (dailyPrices.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(dailyPrices);
-    }
+        switch (mode.toLowerCase()) {
+            case "day": {
+                LocalDateTime now = LocalDateTime.now();
+                int currentYear = now.getYear();
+                int currentMonth = now.getMonthValue();
+                List<DailyPrice> dailyPrices = kamisApiService.getDailyPrices(itemCategoryCode, itemCode, kindCode, currentYear, currentMonth);
+                if (dailyPrices == null || dailyPrices.isEmpty()) {
+                    return ResponseEntity.noContent().build();
+                }
 
-    /**
-     * 특정 상품에 대한 연평균 가격 리스트를 반환함.
-     *
-     * @param itemCategoryCode 품목 카테고리 코드
-     * @param itemCode         품목 코드
-     * @param kindCode         품종 코드
-     * @return 해당 품목의 금일 가격 리스트
-     */
-    @GetMapping("/price/yearly")
-    public ResponseEntity<List<YearlyPrice>> getYearlyAveragePrice(
-            @RequestParam(required = true) String itemCategoryCode,
-            @RequestParam(required = true) String itemCode,
-            @RequestParam(required = true) String kindCode) {
-        List<YearlyPrice> yearlyPrices = kamisApiService.getYearlyPrices(itemCategoryCode, itemCode, kindCode);
-        if (yearlyPrices.isEmpty()) {
-            return ResponseEntity.noContent().build();
+                System.out.println("No data found.");
+
+                List<DailyPriceDto> dailyPriceDtos = dailyPrices.stream().map(dp -> DailyPriceDto.builder()
+                        .itemCategoryCode(dp.getInformation().getItemCategoryCode())
+                        .itemCategoryName(dp.getInformation().getItemCategoryName())
+                        .itemCode(dp.getInformation().getItemCode())
+                        .itemName(dp.getInformation().getItemName())
+                        .kindCode(dp.getInformation().getKindCode())
+                        .kindName(dp.getInformation().getKindName())
+                        .unit(dp.getInformation().getUnit())
+                        .year(dp.getYear())
+                        .month(dp.getMonth())
+                        .day(dp.getDay())
+                        .price(dp.getPrice())
+                        .build()
+                ).collect(Collectors.toList());
+                return ResponseEntity.ok(dailyPriceDtos);
+            }
+            case "month": {
+                YearMonth currentYm = YearMonth.now();
+                YearMonth startRangeYm = currentYm.minusYears(1).plusMonths(1);
+                int startYear = startRangeYm.getYear();
+                int startMonth = startRangeYm.getMonthValue();
+                int endYear = currentYm.getYear();
+                int endMonth = currentYm.getMonthValue();
+                List<MonthlyPrice> monthlyPrices = kamisApiService.getMonthlyPrices(
+                        itemCategoryCode, itemCode, kindCode, startYear, startMonth, endYear, endMonth);
+                if (monthlyPrices == null || monthlyPrices.isEmpty()) {
+                    return ResponseEntity.noContent().build();
+                }
+                List<MonthlyPriceDto> monthlyPriceDtos = monthlyPrices.stream().map(mp -> MonthlyPriceDto.builder()
+                        .itemCategoryCode(mp.getInformation().getItemCategoryCode())
+                        .itemCategoryName(mp.getInformation().getItemCategoryName())
+                        .itemCode(mp.getInformation().getItemCode())
+                        .itemName(mp.getInformation().getItemName())
+                        .kindCode(mp.getInformation().getKindCode())
+                        .kindName(mp.getInformation().getKindName())
+                        .unit(mp.getInformation().getUnit())
+                        .year(mp.getPriceYear())
+                        .month(mp.getPriceMonth())
+                        .price(mp.getPrice())
+                        .build()
+                ).collect(Collectors.toList());
+                return ResponseEntity.ok(monthlyPriceDtos);
+            }
+            case "year": {
+                // 최근 5개년치만 반환
+                List<YearlyPrice> yearlyPrices = kamisApiService.getYearlyPrices(itemCategoryCode, itemCode, kindCode);
+                if (yearlyPrices == null || yearlyPrices.isEmpty()) {
+                    return ResponseEntity.noContent().build();
+                }
+                List<YearlyPriceDto> yearlyPriceDtos = yearlyPrices.stream()
+                        .sorted((a, b) -> b.getPriceYear() - a.getPriceYear()) // 최신 연도 우선 정렬
+                        .limit(5)
+                        .map(yp -> YearlyPriceDto.builder()
+                                .itemCategoryCode(yp.getInformation().getItemCategoryCode())
+                                .itemCategoryName(yp.getInformation().getItemCategoryName())
+                                .itemCode(yp.getInformation().getItemCode())
+                                .itemName(yp.getInformation().getItemName())
+                                .kindCode(yp.getInformation().getKindCode())
+                                .kindName(yp.getInformation().getKindName())
+                                .unit(yp.getInformation().getUnit())
+                                .year(yp.getPriceYear())
+                                .averagePrice(yp.getAveragePrice())
+                                .build()
+                        ).collect(Collectors.toList());
+                return ResponseEntity.ok(yearlyPriceDtos);
+            }
+            default:
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("mode 파라미터는 day, month, year 중 하나여야 합니다.");
         }
-        return ResponseEntity.ok(yearlyPrices);
     }
 }
