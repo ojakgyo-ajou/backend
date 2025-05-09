@@ -49,3 +49,4 @@ wrapper/
 .gradle/
 caches
 /wrapper/
+/daemon
