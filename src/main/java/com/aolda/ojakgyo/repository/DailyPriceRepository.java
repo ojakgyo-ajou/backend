@@ -1,25 +1,24 @@
 package com.aolda.ojakgyo.repository;
 
 import com.aolda.ojakgyo.entity.DailyPrice;
+import com.aolda.ojakgyo.entity.Information;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.time.LocalDate;
+import java.util.Optional;
 
 public interface DailyPriceRepository extends JpaRepository<DailyPrice, Long> {
 
-//    // 1일전 가격(dpr2)과 현재 가격(dpr1)의 차이 (dpr2 - dpr1)가 가장 큰 상품을 조회
-//    // (할인폭이 가장 큰 상품)
-//    @Query("SELECT d FROM Daily d WHERE d.dpr1 IS NOT NULL AND d.dpr2 IS NOT NULL " +
-//           "ORDER BY (CAST(d.dpr2 AS java.lang.Integer) - CAST(d.dpr1 AS java.lang.Integer)) DESC")
-//    List<Daily> findTopByOrderByDayPriceDifferenceDesc(Pageable pageable);
-//
-//    // 1달전 가격(dpr3)과 현재 가격(dpr1)의 차이 (dpr3 - dpr1)가 가장 큰 상품을 조회
-//    // (할인폭이 가장 큰 상품)
-//    @Query("SELECT d FROM Daily d WHERE d.dpr1 IS NOT NULL AND d.dpr3 IS NOT NULL " +
-//           "ORDER BY (CAST(d.dpr3 AS java.lang.Integer) - CAST(d.dpr1 AS java.lang.Integer)) DESC")
-//    List<Daily> findTopByOrderByMonthPriceDifferenceDesc(Pageable pageable);
-//
-//    // 1년전 가격(dpr4)와 현재 가격(dpr1)의 차이 (dpr4 - dpr1)가 가장 큰 상품을 조회
-//    // (할인폭이 가장 큰 상품)
-//    @Query("SELECT d FROM Daily d WHERE d.dpr1 IS NOT NULL AND d.dpr4 IS NOT NULL " +
-//           "ORDER BY (CAST(d.dpr4 AS java.lang.Integer) - CAST(d.dpr1 AS java.lang.Integer)) DESC")
-//    List<Daily> findTopByOrderByYearPriceDifferenceDesc(Pageable pageable);
+    /**
+     * 특정 품목에 대한 금일 가격 리스트를 반환함.
+     *
+     * @param itemCategoryCode 품목 카테고리 코드
+     * @param itemCode         품목 코드
+     * @param kindCode         품종 코드
+     * @return 해당 품목의 금일 가격 리스트
+     */
+    List<DailyPrice> findByInformationItemCategoryCodeAndInformationItemCodeAndInformationKindCodeOrderByPriceYearAscPriceMonthAscPriceDayAsc(String itemCategoryCode, String itemCode, String kindCode);
+
+    Optional<DailyPrice> findByInformationAndDate(Information information, LocalDate date);
 }

@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 
@@ -24,7 +23,7 @@ public class DailyPrice {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "information_id") // 실제 Products 테이블의 PK 컬럼명에 맞춰야 합니다.
-    private Products products;
+    private Information information;
 
     // 날짜 
     @Column(name = "date")

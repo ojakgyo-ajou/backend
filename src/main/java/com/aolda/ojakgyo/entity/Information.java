@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Entity
 @Table(name = "information")
 @Getter
@@ -38,10 +36,6 @@ public class Information {
     // p_kindcode 품종코드
     @Column(name = "kindcode")
     private String kindCode;
-
-    // p_productrankcode 등급코드
-    @Column(name = "productrankcode")
-    private String productRankCode;
 
     @Column(name = "itemname") // 품목명
     private String itemName;
