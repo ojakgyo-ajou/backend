@@ -29,6 +29,10 @@ public class Information {
     @Column(name = "itemcategorycode")
     private String itemCategoryCode;
 
+    // 부류 이름 
+    @Column(name = "itemcategoryname")
+    private String itemCategoryName;
+
     // p_itemcode 품목코드
     @Column(name = "itemcode")
     private String itemCode;
