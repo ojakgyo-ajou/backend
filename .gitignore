@@ -50,3 +50,4 @@ wrapper/
 caches
 /wrapper/
 /daemon
+/native
