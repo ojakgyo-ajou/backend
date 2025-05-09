@@ -26,7 +26,4 @@ public class Products {
     private String productName;
     private String productPrice;
     private String productImage;
-
-
-
 }
