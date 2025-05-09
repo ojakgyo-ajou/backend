@@ -5,14 +5,14 @@ on:
     branches:
       - "main"
 
-jobs:     
+jobs:
   java-be-build:
     runs-on: ubuntu-latest
     steps:
-      - 
+      -
         name: Git Checkout
-        uses: actions/checkout@v4        
-      - 
+        uses: actions/checkout@v4
+      -
         name: Docker Buildx
         uses: docker/setup-buildx-action@v1
       -
@@ -29,23 +29,23 @@ jobs:
           push: true
           tags: jjjjjk12/ojakgyo-be:latest
           cache-from: type=gha
-          cache-to: type=gha,mode=max 
-  
+          cache-to: type=gha,mode=max
+
 
   deploy:
     needs:
       - java-be-build
     runs-on: ubuntu-latest
     steps:
-      - 
+      -
         name: SSH Deployment
         uses: appleboy/ssh-action@master
         with:
-            host: ${{ secrets.DEPLOY_HOST }}
-            port: ${{ secrets.DEPLOY_HOST_SSH_PORT }}
-            username: ${{ secrets.DEPLOY_HOST_USERNAME }}
-            password: ${{ secrets.DEPLOY_HOST_PASSWORD }}
-            script: |
-              cd /home/ubuntu/be
-              docker pull jjjjjk12/ojakgyo-be:latest
-              docker compose down && docker compose up -d
+          host: ${{ secrets.DEPLOY_HOST }}
+          port: ${{ secrets.DEPLOY_HOST_SSH_PORT }}
+          username: ${{ secrets.DEPLOY_HOST_USERNAME }}
+          password: ${{ secrets.DEPLOY_HOST_PASSWORD }}
+          script: |
+            cd /home/ubuntu/be
+            sudo docker pull jjjjjk12/ojakgyo-be:latest
+            sudo docker compose down && docker compose up -d
