@@ -17,15 +17,14 @@ public class AIServiceController {
     private final RecipeService recipeService;
     private final PricePredictionService pricePredictionService;
 
-    @PostMapping("/recipe")
-    public ResponseEntity<String> getRecipe(@Valid @RequestBody RecipeRequestDto requestDto) {
-        String recipe = recipeService.getRecipe(requestDto.getCropName());
+    @GetMapping("/recipe")
+    public ResponseEntity<String> getRecipe(@RequestParam(required = true) String productName) {
+        String recipe = recipeService.getRecipe(productName);
         return ResponseEntity.ok(recipe);
     }
 
-    @PostMapping("/price-prediction")
-    public ResponseEntity<String> predictPrice(@Valid @RequestBody PricePredictionRequestDto requestDto) {
-        String prediction = pricePredictionService.predictPrice(requestDto.getCropName());
-        return ResponseEntity.ok(prediction);
+    @GetMapping("/price-prediction")
+    public ResponseEntity<Object> predictPrice(@RequestParam(required = true) String productName) {
+        return ResponseEntity.ok(pricePredictionService.predictPrice(productName));
     }
 } 
