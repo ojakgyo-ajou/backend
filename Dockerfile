@@ -13,7 +13,7 @@ COPY --chown=gradle:gradle src ./src
 RUN gradle build --no-daemon
 
 # 실행 단계
-FROM openjdk:17-slim
+FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
