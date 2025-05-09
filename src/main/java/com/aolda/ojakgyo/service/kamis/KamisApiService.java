@@ -35,7 +35,6 @@ public class KamisApiService {
 
     private final RestTemplate restTemplate; // RestTemplate 빈 주입
     private final ObjectMapper objectMapper; // ObjectMapper 빈 주입
-    private final DailyPriceRepository dailyPriceRepository;
     private final MonthlyPriceRepository monthlyPriceRepository;
     private final YearlyPriceRepository yearlyPriceRepository;
     private final InformationRepository informationRepository;
@@ -113,7 +112,7 @@ public class KamisApiService {
                             .todayPrice(todayPriceNum)
                             .yesterdayPrice(yesterdayPriceNum)
                             .priceChangeRate(actualPriceChangeRate)
-                            .priceDirection(Integer.parseInt(item.getDirection()))
+                            .priceDirection(todayPriceNum == yesterdayPriceNum ? 2 : todayPriceNum < yesterdayPriceNum ? 0 : 1)
                             .build();
                     dailyDtoList.add(dto);
                     log.trace("DailyDto 추가됨: {}", dto);
