@@ -69,8 +69,8 @@ public class PricePredictionService {
                     List<NewsArticle> allArticles = new ArrayList<>();
                     
                     for (JsonNode item : items) {
-                        try {
-                            String title = item.get("title").asText().replaceAll("<[^>]*>", "");
+                    try {
+                        String title = item.get("title").asText().replaceAll("<[^>]*>", "");
                             String press = item.has("publisher") ? item.get("publisher").asText() : "기타";
                             String pubDate = item.has("pubDate") ? 
                                 item.get("pubDate").asText().split(" ")[3] + "-" + 
@@ -88,14 +88,14 @@ public class PricePredictionService {
                                     .build();
                             
                             allArticles.add(article);
-                        } catch (Exception e) {
-                            log.error("기사 파싱 중 오류 발생: {}", e.getMessage());
+                    } catch (Exception e) {
+                        log.error("기사 파싱 중 오류 발생: {}", e.getMessage());
                         }
                     }
                     
                     // LLM을 사용하여 관련 기사 필터링
                     articles = checkArticleRelevanceWithLLM(cropName, allArticles);
-                }
+            }
             }
         } catch (Exception e) {
             log.error("뉴스 검색 중 오류 발생: {}", e.getMessage(), e);
@@ -209,40 +209,40 @@ public class PricePredictionService {
 
     private PricePredictionResponse predictPrice(String cropName, String newsArticle) {
         for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
-            try (CloseableHttpClient client = HttpClients.createDefault()) {
-                String prompt = String.format("""
-                    다음 농작물의 시장 가격을 예측해주세요:
-                    농작물: %s
-                    관련 뉴스 기사: %s
-                    
-                    다음 형식으로만 답변해주세요. 다른 설명은 하지 마세요:
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            String prompt = String.format("""
+                다음 농작물의 시장 가격을 예측해주세요:
+                농작물: %s
+                관련 뉴스 기사: %s
+                
+                다음 형식으로만 답변해주세요. 다른 설명은 하지 마세요:
                     1. 예상 가격 수준 : [반드시 '비쌈', '보통', '쌈' 중 하나로만 답변]
                     2. 판단 근거 : [한 줄로 간단하게, '~해요'로 끝나는 부드러운 말투로 작성]
-                    3. 참고 기사 링크 : [해당 작물의 가격, 수급, 작황과 직접적으로 관련된 기사만 3개 이내로 선택]
-                    
-                    주의사항:
+                3. 참고 기사 링크 : [해당 작물의 가격, 수급, 작황과 직접적으로 관련된 기사만 3개 이내로 선택]
+                
+                주의사항:
                     - 예상 가격 수준은 반드시 '비쌈', '보통', '쌈' 중 하나로만 답변해주세요.
                     - 판단이 불가능한 경우에도 '보통'으로 답변해주세요.
                     - 판단 근거는 반드시 '~해요'로 끝나는 부드러운 말투로 작성해주세요.
-                    - 참고 기사는 반드시 해당 작물의 가격, 수급, 작황과 직접적으로 관련된 기사만 선택해주세요.
-                    - 관련 없는 기사는 무시하고 관련 있는 기사만 선택해주세요.
-                    """, cropName, newsArticle);
+                - 참고 기사는 반드시 해당 작물의 가격, 수급, 작황과 직접적으로 관련된 기사만 선택해주세요.
+                - 관련 없는 기사는 무시하고 관련 있는 기사만 선택해주세요.
+                """, cropName, newsArticle);
 
-                Map<String, Object> requestBody = new HashMap<>();
-                requestBody.put("contents", Map.of("parts", new Object[]{Map.of("text", prompt)}));
-                requestBody.put("generationConfig", Map.of(
-                    "temperature", 0.3,
-                    "topK", 40,
-                    "topP", 0.95,
-                    "maxOutputTokens", 1024
-                ));
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("contents", Map.of("parts", new Object[]{Map.of("text", prompt)}));
+            requestBody.put("generationConfig", Map.of(
+                "temperature", 0.3,
+                "topK", 40,
+                "topP", 0.95,
+                "maxOutputTokens", 1024
+            ));
 
-                HttpPost request = new HttpPost("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + geminiApiKey);
-                request.setHeader("Content-Type", "application/json");
-                request.setEntity(new StringEntity(objectMapper.writeValueAsString(requestBody), "UTF-8"));
+            HttpPost request = new HttpPost("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + geminiApiKey);
+            request.setHeader("Content-Type", "application/json");
+            request.setEntity(new StringEntity(objectMapper.writeValueAsString(requestBody), "UTF-8"));
 
-                try (CloseableHttpResponse response = client.execute(request)) {
-                    String responseBody = EntityUtils.toString(response.getEntity());
+            try (CloseableHttpResponse response = client.execute(request)) {
+                String responseBody = EntityUtils.toString(response.getEntity());
                     JsonNode jsonResponse = objectMapper.readTree(responseBody);
                     String aiResponse = jsonResponse.get("candidates").get(0).get("content").get("parts").get(0).get("text").asText();
                     
